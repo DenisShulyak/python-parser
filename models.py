@@ -34,10 +34,6 @@ class Block:
         self.recommendation = recommendation  # Комментарий блока
         self.norecommendation = norecommendation
 
-        # items и titles не могут быть одновременно заполнены
-        # if items and titles:
-        #     raise ValueError("Block cannot have both items and titles at the same time.")
-
         self.items = items if items else []  # Список объектов Item
         self.titles = titles if titles else []  # Список объектов Title
 

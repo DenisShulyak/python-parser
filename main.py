@@ -1,21 +1,15 @@
-import json
-
 from selenium import webdriver
-from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 
-from models import Section, Diagnosis, Block, Item, Title
 from parser_functions import login_button, get_element_by_xpath, start_parser, get_a_tags
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")  # Запуск в headless режиме
 chrome_options.add_argument("--disable-gpu")  # Отключение использования GPU
-# chrome_options.add_argument("--no-sandbox")  # Без песочницы
+chrome_options.add_argument("--no-sandbox")  # Без песочницы
 chrome_options.add_argument("--window-size=1920,1080")  # Эмуляция окна браузера с разрешением 1920x1080
 chrome_options.add_argument("--start-maximized")  # Полноэкранный режим
 

@@ -6,7 +6,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from models import Title, Item, Section, Diagnosis, Block
 
-
 # Шаг 1: Ожидание и нажатие кнопки "Войти" для перехода к вводу телефона
 def login_button(browser):
     try:
@@ -112,9 +111,6 @@ def start_parser(browser, speciality_links, speciality_link_index=0, diagnosis_l
     speciality_description = get_element_by_xpath(browser, './/div[contains(@class, "Specialitystyled__Description")]', speciality_link)
     # Создание медицинской секции
     section = Section(name=speciality_description.text)
-    if speciality_description.text == " ":
-        print("ПАДЛА")
-    # speciality_link_href = speciality_link.get_attribute('href')
 
     # Переход на страницу диагноза
     speciality_link.click()
@@ -123,7 +119,6 @@ def start_parser(browser, speciality_links, speciality_link_index=0, diagnosis_l
 
     print(f"{section.name} ({speciality_link_index + 1}/{len(speciality_links)})")
 
-    # diagnosis_link_index = 0
     for diagnosis_link in diagnosies_links:
         try:
 
@@ -162,22 +157,17 @@ def start_parser(browser, speciality_links, speciality_link_index=0, diagnosis_l
                             items.append(get_items_by_element(browser, diagnosis_block_section))
 
                 comment_button = get_element_by_xpath(browser, '//div[contains(@class, "CommentButtonstyled__Root")]')
-                comment_html = None
                 recommendation = None
                 norecommendation = None
                 if comment_button:
                     comment_button.click()
 
-                    # comment = get_element_by_xpath(browser, '//div[contains(@class, "CommentSectionstyled__Root")]')
                     comments = get_elements_by_xpath(browser, '//div[contains(@class, "CommentItemstyled__Root")]')
                     if len(comments) == 1:
                         recommendation = comments[0].get_attribute('outerHTML')
                     if len(comments) == 2:
                         recommendation = comments[0].get_attribute('outerHTML')
                         norecommendation = comments[1].get_attribute('outerHTML')
-
-
-                    # comment_html = comment.get_attribute('outerHTML')
 
                     close_comment_button = get_element_by_xpath(browser, '//div[contains(@class, "CommentSectionstyled__Button")]')
                     close_comment_button.click()
