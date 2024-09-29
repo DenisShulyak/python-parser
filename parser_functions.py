@@ -119,9 +119,10 @@ def start_parser(browser, speciality_links, speciality_link_index=0, diagnosis_l
 
     print(f"{section.name} ({speciality_link_index + 1}/{len(speciality_links)})")
 
+    json_data = None
+
     for diagnosis_link in diagnosies_links:
         try:
-
             diagnosis_link = get_a_tags(browser, 'Diagnosisstyled__Root')[diagnosis_link_index]
             diagnos_description = get_element_by_xpath(browser, './/div[contains(@class, "Diagnosisstyled__Description")]',
                                                        diagnosis_link)
@@ -129,7 +130,6 @@ def start_parser(browser, speciality_links, speciality_link_index=0, diagnosis_l
             # Создание диагноза и добавление в секцию
             diagnosis = Diagnosis(diagnos_description.text, diagnosis_code.text)
             print(f"        {diagnosis.name} ({diagnosis_link_index + 1}/{len(diagnosies_links)})")
-
             diagnosis_link.click()
             # Достать блоки
             diagnosis_blocks = get_elements_by_xpath(browser, './/div[contains(@class, "DiagnosisSectionstyled__Root")]')
@@ -143,7 +143,6 @@ def start_parser(browser, speciality_links, speciality_link_index=0, diagnosis_l
                 diagnosis_block_name = get_element_by_xpath(browser, './/div[contains(@class, "DiagnosisSectionstyled__Name")]', diagnosis_block)
                 diagnosis_block_content = get_element_by_xpath(browser, './/div[contains(@class, "DiagnosisSectionstyled__Content")]', diagnosis_block)
                 diagnosis_block_sections = get_elements_by_xpath(browser, './div', diagnosis_block_content)
-
                 items = []
                 titles = []
                 if diagnosis_block_sections:
@@ -155,23 +154,19 @@ def start_parser(browser, speciality_links, speciality_link_index=0, diagnosis_l
                                 get_items_by_element(browser, diagnosis_block_section, diagnosis_block_group_name_text))
                         else:
                             items.append(get_items_by_element(browser, diagnosis_block_section))
-
                 comment_button = get_element_by_xpath(browser, '//div[contains(@class, "CommentButtonstyled__Root")]')
                 recommendation = None
                 norecommendation = None
                 if comment_button:
                     comment_button.click()
-
                     comments = get_elements_by_xpath(browser, '//div[contains(@class, "CommentItemstyled__Root")]')
                     if len(comments) == 1:
                         recommendation = comments[0].get_attribute('outerHTML')
                     if len(comments) == 2:
                         recommendation = comments[0].get_attribute('outerHTML')
                         norecommendation = comments[1].get_attribute('outerHTML')
-
                     close_comment_button = get_element_by_xpath(browser, '//div[contains(@class, "CommentSectionstyled__Button")]')
                     close_comment_button.click()
-
                 diagnosis.add_block(
                     Block(name=diagnosis_block_name.text, recommendation=recommendation, norecommendation=norecommendation, items=items, titles=titles))
                 print(f"             ✓{diagnosis_block_name.text} ({len(items)} - {len(titles)})")
@@ -180,9 +175,11 @@ def start_parser(browser, speciality_links, speciality_link_index=0, diagnosis_l
             saveToFile(json_data, section.name)
             back_button_click(browser)
             diagnosis_link_index += 1
-        except Exception:
-            print(f"Ошибка парсинга диагноза. Индекс: {diagnosis_link_index}")
-            diagnosis_link_index += 1
+        except Exception as e:
+            print(f"Ошибка парсинга диагноза. Индекс: {diagnosis_link_index}", e)
+            # break
+            back_button_click(browser)
+            diagnosis_link_index += 1 # Если нужно парсить остальные дигнозы после ошибки
 
     back_button_click(browser)
     speciality_link_index += 1
