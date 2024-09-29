@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
-from parser_functions import login_button, get_element_by_xpath, start_parser, get_a_tags
+from parser_functions import login_button, get_element_by_xpath, start_parser, get_a_tags, saveToFile
 
 chrome_options = Options()
 chrome_options.add_argument("--headless")  # Запуск в headless режиме
@@ -72,6 +72,9 @@ while speciality_link_index < len(speciality_links):
             counter += 1
         else:
             counter = 0
+            speciality_link = get_a_tags(browser, 'Specialitystyled')[speciality_link_index]
+            filename = get_element_by_xpath(browser, './/div[contains(@class, "Specialitystyled__Description")]', speciality_link).text
+            saveToFile("", filename)
             speciality_link_index += 1
             browser.get(baseUrl)
 

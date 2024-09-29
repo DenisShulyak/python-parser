@@ -77,7 +77,7 @@ def get_sections_json(sections):
 def saveToFile(json_data, filename=None):
     if not filename:
         filename = "data"
-    with open(f"{filename}.json", "w", encoding="utf-8") as file:
+    with open(f"parsed_data/{filename}.json", "w", encoding="utf-8") as file:
         file.write(json_data)
 
 
