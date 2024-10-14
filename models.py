@@ -1,31 +1,49 @@
-class Item:
-    def __init__(self, name, values=None):
+class Value:
+    def __init__(self, name, comment):
         self.name = name  # Название item
-        self.values = values if values else []  # Массив строк
+        self.comment = comment
 
     def to_dict(self):
         return {
             "name": self.name,
-            "values": self.values
+            "comment": self.comment,
         }
 
     def __repr__(self):
-        return f"Item(name={self.name}, values={self.values})"
+        return f"Item(name={self.name}, comment={self.comment})"
+
+class Item:
+    def __init__(self, name, comment, values=None):
+        self.name = name  # Название item
+        self.values = values if values else []  # Массив строк
+        self.comment = comment
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "values": [value.to_dict() for value in self.values] if self.values else None,
+            "comment": self.comment,
+        }
+
+    def __repr__(self):
+        return f"Item(name={self.name}, comment={self.comment}, values={self.values})"
 
 
 class Title:
-    def __init__(self, name, values=None):
+    def __init__(self, name, comment, values=None):
         self.name = name  # Название title
-        self.values = values if values else []  # Массив строк
+        self.values = values if values else []
+        self.comment = comment
 
     def to_dict(self):
         return {
             "name": self.name,
-            "values": self.values
+            "values": [value.to_dict() for value in self.values] if self.values else None,
+            "comment": self.comment,
         }
 
     def __repr__(self):
-        return f"Title(name={self.name}, values={self.values})"
+        return f"Title(name={self.name}, comment={self.comment}, values={self.values})"
 
 
 class Block:
