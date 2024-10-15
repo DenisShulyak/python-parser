@@ -14,7 +14,7 @@ def saveToFile(json_data, filename=None):
     with open(f"parsed_data/{filename}.json", "w", encoding="utf-8") as file:
         file.write(json_data)
 
-def parseSpetiality(id=None, name=None, isPopular=False):
+def parseSpetiality(session,id=None, name=None, isPopular=False):
     section = Section(name)
     response_diagnoses = session.get(diagnoses_url + str(id)) if not isPopular else session.get('https://assist.fomin-clinic.ru/api/diagnoses/?popular=true')
     if response_diagnoses.status_code == 200:
@@ -108,10 +108,22 @@ def parseSpetiality(id=None, name=None, isPopular=False):
         saveToFile(json_data, name)
         print("Имопртирован: " + name)
 
+auth_url = "https://assist.fomin-clinic.ru/api/auth/confirm_password/"
+
+# Данные для авторизации
+payload = {
+    'phone_number': '79889928451',
+    'password': '8451'
+}
+
+# Используем сессию для сохранения состояния
 with requests.Session() as session:
-    payload = {'phone_number': '79889928451', 'password': '8451'}
-    url = "https://assist.fomin-clinic.ru/api/auth/confirm_password/"
-    session.post(url, data=payload)
+    # Делаем POST-запрос для авторизации
+    auth_response = session.post(auth_url, json=payload)
+
+    # Проверяем успешность авторизации
+    if auth_response.status_code == 200:
+        print("Успешная авторизация!")
 
     # URL API
     url = "https://assist.fomin-clinic.ru/api/specialities/"
@@ -127,14 +139,14 @@ with requests.Session() as session:
 
         popular_name = 'Популярные диагнозы'
         print(f"ID: popular, Название: {popular_name}")
-        parseSpetiality(name=popular_name, isPopular=True)
+        parseSpetiality(session=session, name=popular_name, isPopular=True)
         # Проходим по каждому элементу списка
         for item in data:
             id = item['id']
             name = item['name']
             diagnoses_count = item['diagnoses_count']
             print(f"ID: {id}, Название: {name}, Количество диагнозов: {diagnoses_count}")
-            parseSpetiality(id, name)
+            parseSpetiality(session=session, id=id, name=name)
 
     else:
         print(f"Ошибка при запросе данных. Статус код: {response.status_code}")
